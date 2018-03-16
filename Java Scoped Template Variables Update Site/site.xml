@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/de.tools400.java.scoped.variables.core_1.0.0.b003.jar" id="de.tools400.java.scoped.variables.core" version="1.0.0.b003">
+      <category name="de.tools400.java.scoped.variables.core"/>
+   </feature>
+   <category-def name="de.tools400.java.scoped.variables.core" label="Java Scoped Template Variables (Base Component)"/>
+</site>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="de.tools400.java.scoped.variables.core"
+      label="Java Scoped Variables Core (required)"
+      version="1.0.0.b003"
+      provider-name="Tools/400">
+
+   <description url="https://sourceforge.net/projects/tools400/">
+      This plug-in adds project scoped variables to the Eclipse Java preferences.
+These variables can be used in Java templates to add the name of the team that is responsible for the project or the year the
+project was started. It also allows you to define your own project scoped variables. The plug-in was inspired by waffel&apos;s Weblog, &apos;Use your own variable in eclipse code templates&apos; at https://thomaswabner.wordpress.com/2009/08/21/use-your-own-variable-in-eclipse-code-templates/.
+   </description>
+
+   <copyright url="https://sourceforge.net/projects/tools400/">
+      Copyright (c) 2017-2017 Tools/400. All rights reserved.
+   </copyright>
+
+   <license url="http://www.eclipse.org/legal/cpl-v10.html">
+      This program and the accompanying materials are made available
+under the terms of the Common Public License v1.0 which accompanies
+this distribution, and is available at http://www.eclipse.org/legal/cpl-v10.html.
+   </license>
+
+   <url>
+      <discovery label="Tools/400" url="http://www.tools400.de"/>
+      <discovery label="waffel&apos;s Weblog - Use your own variable in eclipse code templates" url="https://thomaswabner.wordpress.com/2009/08/21/use-your-own-variable-in-eclipse-code-templates/"/>
+   </url>
+
+   <plugin
+         id="de.tools400.java.scoped.variables.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
