@@ -22,8 +22,11 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MenuAdapter;
+import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
@@ -37,6 +40,8 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
@@ -137,6 +142,11 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
                 widgetSelected(event);
             }
         });
+
+        Menu popupMenu = new Menu(listVariablesSelector);
+        popupMenu.addMenuListener(new VariablesContextMenu(popupMenu));
+
+        listVariablesSelector.setMenu(popupMenu);
     }
 
     private void createEditorPanel(Composite parent) {
@@ -169,14 +179,7 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
         btnCreate.addSelectionListener(new SelectionListener() {
 
             public void widgetSelected(SelectionEvent event) {
-
-                Category category = getSelectedCategory();
-                if (category == null) {
-                    return;
-                }
-
-                Variable variable = new Variable(txtName.getText(), txtDescription.getText());
-                category.addVariable(variable);
+                performCreateVariable(txtName.getText(), txtDescription.getText());
             }
 
             public void widgetDefaultSelected(SelectionEvent event) {
@@ -223,6 +226,79 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
         tvValues.setColumnProperties(PROPS);
         tvValues.setCellEditors(editors);
         tvValues.setCellModifier(new ScopedValuesModifier(tvValues));
+    }
+
+    protected void performCreateVariable(String name, String description) {
+
+        Category category = getSelectedCategory();
+        if (category == null) {
+            return;
+        }
+
+        Variable variable = new Variable(name, description);
+        category.addVariable(variable);
+
+        setVariables(category.getVariableNames());
+
+        selectVariable(name);
+    }
+
+    protected void performDeleteVariable(String name) {
+
+        Category category = getSelectedCategory();
+        if (category == null) {
+            return;
+        }
+
+        int newIndex = -1;
+
+        for (int i = 0; i < listVariablesSelector.getItemCount(); i++) {
+            String currentName = listVariablesSelector.getItem(i);
+            if (currentName.equals(name)) {
+                newIndex = i;
+                break;
+            }
+        }
+
+        category.removeVariable(name);
+
+        setVariables(category.getVariableNames());
+
+        selectVariable(newIndex);
+    }
+
+    private void selectVariable(String name) {
+
+        for (int i = 0; i < listVariablesSelector.getItemCount(); i++) {
+            String currentName = listVariablesSelector.getItem(i);
+            if (currentName.equals(name)) {
+                selectVariable(i);
+                break;
+            }
+        }
+
+        setControlsEnablement();
+    }
+
+    private void selectVariable(int index) {
+
+        listVariablesSelector.setFocus();
+
+        if (index <= 0 && listVariablesSelector.getItemCount() > 0) {
+            listVariablesSelector.select(1);
+        } else if (index >= listVariablesSelector.getItemCount()) {
+            if (listVariablesSelector.getItemCount() >= 2) {
+                listVariablesSelector.select(1);
+            } else {
+                listVariablesSelector.select(0);
+            }
+        } else {
+            listVariablesSelector.select(index);
+        }
+
+        updateVariableTextFields(getSelectedVariable());
+
+        setControlsEnablement();
     }
 
     private Layout createLayoutNoMargins(int columns) {
@@ -290,14 +366,15 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
         Category category = categories[index];
         setVariables(category.getVariableNames());
 
-        if (listVariablesSelector.getItemCount() > 0) {
-            String variableName = listVariablesSelector.getItem(0);
-            if (NEW_VARIABLE.equalsIgnoreCase(variableName)) {
-                listVariablesSelector.select(1);
-            } else {
-                listVariablesSelector.select(0);
-            }
-        }
+        // if (listVariablesSelector.getItemCount() > 0) {
+        // String variableName = listVariablesSelector.getItem(0);
+        // if (NEW_VARIABLE.equalsIgnoreCase(variableName)) {
+        // listVariablesSelector.select(1);
+        // } else {
+        // listVariablesSelector.select(0);
+        // }
+        // }
+        selectVariable(1);
 
         performVariableChangedEvent();
     }
@@ -699,6 +776,62 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
 
                 viewer.refresh();
             }
+        }
+    }
+
+    /**
+     * Class that implements the context menu for the table rows.
+     */
+    private class VariablesContextMenu extends MenuAdapter {
+
+        private Menu menu;
+        private MenuItem menuItemDelete;
+        private String[] selectedVariableNames;
+
+        public VariablesContextMenu(Menu menu) {
+            this.menu = menu;
+        }
+
+        @Override
+        public void menuShown(MenuEvent event) {
+            destroyMenuItems();
+            createMenuItems();
+        }
+
+        private Menu getMenu() {
+            return menu;
+        }
+
+        private void destroyMenuItems() {
+            if (!((menuItemDelete == null) || (menuItemDelete.isDisposed()))) {
+                menuItemDelete.dispose();
+            }
+        }
+
+        private void createMenuItems() {
+
+            selectedVariableNames = listVariablesSelector.getSelection();
+            for (String variableName : selectedVariableNames) {
+                if (NEW_VARIABLE.equals(variableName)) {
+                    return;
+                }
+            }
+
+            createMenuItemCopySelected();
+        }
+
+        private void createMenuItemCopySelected() {
+
+            menuItemDelete = new MenuItem(getMenu(), SWT.NONE);
+            menuItemDelete.setText("Delete");
+            menuItemDelete.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    for (String variableName : selectedVariableNames) {
+                        performDeleteVariable(variableName);
+                    }
+                }
+            });
         }
     }
 }

@@ -79,6 +79,15 @@ public class Category {
         variables.put(variable.getName(), variable);
     }
 
+    public void removeVariable(String name) {
+
+        if (!hasVariable(name)) {
+            return;
+        }
+
+        variables.remove(name);
+    }
+
     public boolean hasVariable(String name) {
         return variables.containsKey(name);
     }
