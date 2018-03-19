@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Java Scoped Template Variables Core Plug-in
 Bundle-SymbolicName: de.tools400.java.scoped.variables.core;singleton:=true
-Bundle-Version: 1.0.0.b003
+Bundle-Version: 1.1.0.r
 Bundle-Activator: de.tools400.java.scoped.variables.core.JavaScopedTemplateVariablesPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -12,8 +12,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.pde.core
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: Tools/400
-Bundle-ClassPath: .,
- lib/java-json.jar
+Bundle-ClassPath: .
+Eclipse-LazyStart: true

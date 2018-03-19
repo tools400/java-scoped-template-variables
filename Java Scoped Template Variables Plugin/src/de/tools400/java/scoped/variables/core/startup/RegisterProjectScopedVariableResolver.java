@@ -49,7 +49,7 @@ public class RegisterProjectScopedVariableResolver implements IStartup {
         } else {
 
             // register listener to get informed, when plug-in becomes active
-            final BundleContext bundleContext = JavaScopedTemplateVariablesPlugin.getDefault().getBundle().getBundleContext();
+            final BundleContext bundleContext = JavaScopedTemplateVariablesPlugin.getDefault().getBundleContext();
             bundleContext.addBundleListener(new BundleListener() {
                 public void bundleChanged(final BundleEvent pEvent) {
                     final Bundle bundle2 = pEvent.getBundle();

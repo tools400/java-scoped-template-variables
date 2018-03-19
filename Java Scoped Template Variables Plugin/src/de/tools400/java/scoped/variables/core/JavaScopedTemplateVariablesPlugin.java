@@ -23,6 +23,8 @@ public class JavaScopedTemplateVariablesPlugin extends AbstractUIPlugin {
     // The shared instance
     private static JavaScopedTemplateVariablesPlugin plugin;
 
+    private BundleContext bundleContext;
+
     /**
      * The constructor
      */
@@ -38,6 +40,7 @@ public class JavaScopedTemplateVariablesPlugin extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
+        bundleContext = context;
     }
 
     /*
@@ -48,7 +51,12 @@ public class JavaScopedTemplateVariablesPlugin extends AbstractUIPlugin {
      */
     public void stop(BundleContext context) throws Exception {
         plugin = null;
+        bundleContext = null;
         super.stop(context);
+    }
+
+    public BundleContext getBundleContext() {
+        return bundleContext;
     }
 
     /**

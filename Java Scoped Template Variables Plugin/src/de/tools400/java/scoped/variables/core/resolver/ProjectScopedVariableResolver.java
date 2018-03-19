@@ -12,7 +12,7 @@ import org.eclipse.jdt.internal.corext.template.java.CodeTemplateContext;
 import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateVariableResolver;
 import org.eclipse.pde.core.plugin.IPluginModelBase;
-import org.eclipse.pde.core.plugin.PluginRegistry;
+import org.eclipse.pde.internal.core.PDECore;
 
 import de.tools400.java.scoped.variables.core.model.Category;
 import de.tools400.java.scoped.variables.core.model.ICategory;
@@ -39,7 +39,9 @@ public class ProjectScopedVariableResolver extends TemplateVariableResolver {
     protected String resolve(final TemplateContext pContext) {
 
         final CodeTemplateContext context = (CodeTemplateContext)pContext;
-        final IPluginModelBase pluginModelBase = PluginRegistry.findModel(context.getJavaProject().getProject());
+        // final IPluginModelBase pluginModelBase =
+        // PluginRegistry.findModel(context.getJavaProject().getProject());
+        final IPluginModelBase pluginModelBase = PDECore.getDefault().getModelManager().findModel(context.getJavaProject().getProject());
         if (pluginModelBase == null) {
             return null;
         }

@@ -72,10 +72,14 @@ public class Category {
 
     public void addVariable(Variable variable) {
 
-        if (variables.containsKey(variable.getName())) {
+        if (hasVariable(variable.getName())) {
             return;
         }
 
         variables.put(variable.getName(), variable);
+    }
+
+    public boolean hasVariable(String name) {
+        return variables.containsKey(name);
     }
 }

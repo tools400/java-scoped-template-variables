@@ -29,6 +29,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -67,6 +68,7 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
     private Label lblNewEdit;
     private Text txtName;
     private Text txtDescription;
+    private Button btnCreate;
     private TableViewer tvValues;
 
     // Section: createSelectorPanel()
@@ -103,14 +105,12 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
         createLabel(parent, Messages.Label_Category);
 
         cbCategory = WidgetFactory.createReadOnlyCombo(parent, SWT.NONE);
-        cbCategory.setLayoutData(createLayoutData(GridData.FILL_HORIZONTAL));
+        cbCategory.setLayoutData(createLayoutData());
         cbCategory.addSelectionListener(new SelectionListener() {
-            @Override
             public void widgetSelected(SelectionEvent event) {
                 performCategoryChangedEvent();
             }
 
-            @Override
             public void widgetDefaultSelected(SelectionEvent event) {
                 widgetSelected(event);
             }
@@ -129,12 +129,10 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
         listVariablesSelector.setLayoutData(new GridData(GridData.FILL_BOTH));
         listVariablesSelector.addSelectionListener(new SelectionListener() {
 
-            @Override
             public void widgetSelected(SelectionEvent event) {
                 performVariableChangedEvent();
             }
 
-            @Override
             public void widgetDefaultSelected(SelectionEvent event) {
                 widgetSelected(event);
             }
@@ -150,32 +148,52 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
         lblNewEdit = createLabel(cpEditor, "", 2); //$NON-NLS-1$
 
         Composite cpEdit = new Composite(cpEditor, SWT.NONE);
-        cpEdit.setLayout(createLayoutNoMargins(2));
+        cpEdit.setLayout(createLayoutNoMargins(3));
         cpEdit.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         createLabel(cpEdit, Messages.Label_Name);
         txtName = WidgetFactory.createText(cpEdit, SWT.NONE);
-        txtName.setLayoutData(createLayoutData(GridData.FILL_HORIZONTAL));
+        txtName.setLayoutData(createLayoutData(1));
         txtName.addModifyListener(new ModifyListener() {
-            @Override
             public void modifyText(ModifyEvent arg0) {
                 Variable variable = getSelectedVariable();
                 if (variable != null) {
                     variable.setName(txtName.getText());
                 }
+                setControlsEnablement();
+            }
+        });
+
+        btnCreate = WidgetFactory.createPushButton(cpEdit, "Create");
+        btnCreate.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 2));
+        btnCreate.addSelectionListener(new SelectionListener() {
+
+            public void widgetSelected(SelectionEvent event) {
+
+                Category category = getSelectedCategory();
+                if (category == null) {
+                    return;
+                }
+
+                Variable variable = new Variable(txtName.getText(), txtDescription.getText());
+                category.addVariable(variable);
+            }
+
+            public void widgetDefaultSelected(SelectionEvent event) {
+                widgetSelected(event);
             }
         });
 
         createLabel(cpEdit, Messages.Label_Description);
         txtDescription = WidgetFactory.createText(cpEdit, SWT.NONE);
-        txtDescription.setLayoutData(createLayoutData(GridData.FILL_HORIZONTAL));
+        txtDescription.setLayoutData(createLayoutData(1));
         txtDescription.addModifyListener(new ModifyListener() {
-            @Override
             public void modifyText(ModifyEvent arg0) {
                 Variable variable = getSelectedVariable();
                 if (variable != null) {
                     variable.setDescription(txtDescription.getText());
                 }
+                setControlsEnablement();
             }
         });
 
@@ -194,7 +212,7 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
         tblValues.setLinesVisible(true);
         tblValues.setHeaderVisible(true);
 
-        tvValues.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        tvValues.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
         tvValues.setLabelProvider(new ValuesLabelProvider());
         tvValues.setContentProvider(new ValuesContentProvider());
 
@@ -208,7 +226,7 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
     }
 
     private Layout createLayoutNoMargins(int columns) {
-        GridLayout gl = new GridLayout(2, false);
+        GridLayout gl = new GridLayout(columns, false);
         gl.marginHeight = 0;
         gl.marginWidth = 0;
         return gl;
@@ -221,22 +239,44 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
     private void setVariables(String[] variables) {
 
         listVariablesSelector.setItems(variables);
-        // listVariablesSelector.add(NEW_VARIABLE, 0);
+        listVariablesSelector.add(NEW_VARIABLE, 0);
+    }
+
+    private Category getSelectedCategory() {
+
+        int categoryIndex = cbCategory.getSelectionIndex();
+        if (categoryIndex >= 0) {
+            return categories[categoryIndex];
+        }
+
+        return null;
     }
 
     private Variable getSelectedVariable() {
 
-        int categoryIndex = cbCategory.getSelectionIndex();
-        if (categoryIndex >= 0) {
-            Category category = categories[categoryIndex];
-            int variableIndex = listVariablesSelector.getSelectionIndex();
-            if (variableIndex >= 0) {
-                String name = listVariablesSelector.getItem(variableIndex);
-                return category.getVariable(name);
-            }
+        Category category = getSelectedCategory();
+        if (category == null) {
+            return null;
         }
 
-        return null;
+        int variableIndex = listVariablesSelector.getSelectionIndex();
+        if (variableIndex < 0) {
+            return null;
+        }
+
+        String name = getSelectedVariableName();
+
+        return category.getVariable(name);
+    }
+
+    private String getSelectedVariableName() {
+
+        int variableIndex = listVariablesSelector.getSelectionIndex();
+        if (variableIndex < 0) {
+            return null;
+        }
+
+        return listVariablesSelector.getItem(variableIndex);
     }
 
     private void performCategoryChangedEvent() {
@@ -272,30 +312,23 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
 
         Category category = categories[categoryIndex];
 
-        int variableIndex = listVariablesSelector.getSelectionIndex();
-        if (variableIndex < 0) {
+        String name = getSelectedVariableName();
+        if (name == null) {
             tvValues.setInput(null);
             return;
-        }
-
-        String name = listVariablesSelector.getItem(variableIndex);
-        if (NEW_VARIABLE.equalsIgnoreCase(name)) {
-            lblNewEdit.setText(Messages.Label_New_variable);
-            txtName.setEditable(true);
         } else {
-            lblNewEdit.setText(Messages.Label_Edit_variable);
-            txtName.setEditable(false);
+
+            Variable variable = category.getVariable(name);
+            tvValues.setInput(variable);
+            updateVariableTextFields(variable);
+
+            if (tvValues.getTable().getItemCount() > 0) {
+                tvValues.getTable().select(0);
+            }
+
         }
 
-        Variable variable = category.getVariable(name);
-        tvValues.setInput(variable);
-        updateVariableTextFields(variable);
-
-        if (tvValues.getTable().getItemCount() > 0) {
-            tvValues.getTable().select(0);
-        }
-
-        performScopedValuesChanged();
+        setControlsEnablement();
     }
 
     private void updateVariableTextFields(Variable variable) {
@@ -308,10 +341,6 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
 
         txtName.setText(variable.getName());
         txtDescription.setText(variable.getDescription());
-    }
-
-    private void performScopedValuesChanged() {
-
     }
 
     @Override
@@ -378,6 +407,69 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
 
     private void setControlsEnablement() {
 
+        String name = getSelectedVariableName();
+
+        if (NEW_VARIABLE.equalsIgnoreCase(name)) {
+
+            lblNewEdit.setText(Messages.Label_New_variable);
+            txtName.setEditable(true);
+
+            if (validateNewVariable()) {
+                btnCreate.setEnabled(true);
+            } else {
+                btnCreate.setEnabled(false);
+            }
+
+        } else {
+            lblNewEdit.setText(Messages.Label_Edit_variable);
+            txtName.setEditable(false);
+            btnCreate.setEnabled(false);
+        }
+    }
+
+    private boolean validateNewVariable() {
+
+        clearError();
+
+        Category category = getSelectedCategory();
+        if (category == null) {
+            return false;
+        }
+
+        if (!hasName()) {
+            setError("Name is missing.");
+            return false;
+        }
+
+        if (category.hasVariable(txtName.getText())) {
+            setError("Variable already exists.");
+            return false;
+        }
+
+        if (!hasDescription()) {
+            setError("Description is missing");
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean hasName() {
+
+        if (txtName.getText().trim().length() > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean hasDescription() {
+
+        if (txtDescription.getText().trim().length() > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     private boolean setError(String message) {
@@ -412,8 +504,12 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
         return gd;
     }
 
-    private GridData createLayoutData(int style) {
-        return new GridData(style);
+    private GridData createLayoutData() {
+        return new GridData(SWT.FILL, SWT.BEGINNING, true, false, 1, 1);
+    }
+
+    private GridData createLayoutData(int horizontalSpan) {
+        return new GridData(SWT.FILL, SWT.BEGINNING, true, false, horizontalSpan, 1);
     }
 
     private Preferences getPreferences() {
@@ -425,11 +521,9 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
         private Variable variable = null;
         private java.util.List<ScopedValue> scopedValues = new LinkedList<ScopedValue>();
 
-        @Override
         public void dispose() {
         }
 
-        @Override
         public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 
             if (newInput instanceof Variable) {
@@ -446,7 +540,6 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
             updateInput();
         }
 
-        @Override
         public Object[] getElements(Object element) {
 
             return scopedValues.toArray(new ScopedValue[scopedValues.size()]);
@@ -539,12 +632,10 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
 
     private class ValuesLabelProvider extends LabelProvider implements ITableLabelProvider {
 
-        @Override
         public Image getColumnImage(Object arg0, int arg1) {
             return null;
         }
 
-        @Override
         public String getColumnText(Object element, int column) {
 
             if (element instanceof ScopedValue) {
@@ -571,12 +662,10 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
             this.viewer = viewer;
         }
 
-        @Override
         public boolean canModify(Object element, String property) {
             return true;
         }
 
-        @Override
         public Object getValue(Object element, String property) {
 
             if (element instanceof ScopedValue) {
@@ -592,7 +681,6 @@ public class VariablesPreferencePage extends PreferencePage implements IWorkbenc
             return null;
         }
 
-        @Override
         public void modify(Object element, String property, Object value) {
 
             if (element instanceof Item) {

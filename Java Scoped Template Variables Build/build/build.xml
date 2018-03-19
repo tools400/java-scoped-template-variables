@@ -180,6 +180,7 @@
 		<copy todir="${temp.dir.local_updatesite}" >
 			<fileset dir="${site.dir}" includes="artifacts.jar" />
 			<fileset dir="${site.dir}" includes="content.jar" />
+			<fileset dir="${site.dir}" includes="site.xml" />
 		</copy>
 
 	</target>

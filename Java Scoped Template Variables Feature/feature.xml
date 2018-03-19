@@ -2,7 +2,7 @@
 <feature
       id="de.tools400.java.scoped.variables.core"
       label="Java Scoped Variables Core (required)"
-      version="1.0.0.b003"
+      version="1.1.0.r"
       provider-name="Tools/400">
 
    <description url="https://sourceforge.net/projects/tools400/">
@@ -12,7 +12,7 @@ project was started. It also allows you to define your own project scoped variab
    </description>
 
    <copyright url="https://sourceforge.net/projects/tools400/">
-      Copyright (c) 2017-2017 Tools/400. All rights reserved.
+      Copyright (c) 2017-2018 Tools/400. All rights reserved.
    </copyright>
 
    <license url="http://www.eclipse.org/legal/cpl-v10.html">
