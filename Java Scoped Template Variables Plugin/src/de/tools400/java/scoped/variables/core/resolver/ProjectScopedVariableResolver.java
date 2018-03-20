@@ -41,6 +41,9 @@ public class ProjectScopedVariableResolver extends TemplateVariableResolver {
         final CodeTemplateContext context = (CodeTemplateContext)pContext;
         // final IPluginModelBase pluginModelBase =
         // PluginRegistry.findModel(context.getJavaProject().getProject());
+
+        // String v = context.getVariable("package_name");
+
         final IPluginModelBase pluginModelBase = PDECore.getDefault().getModelManager().findModel(context.getJavaProject().getProject());
         if (pluginModelBase == null) {
             return null;
