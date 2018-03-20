@@ -48,7 +48,7 @@ public final class Preferences {
      */
 
     private static final String DOMAIN = JavaScopedTemplateVariablesPlugin.PLUGIN_ID + "."; //$NON-NLS-1$
-    private static final String CATEGORIES = DOMAIN + "CATEGORIES"; //$NON-NLS-1$
+    public static final String CATEGORIES = DOMAIN + "CATEGORIES"; //$NON-NLS-1$
     private static final String CATEGORY = DOMAIN + "CATEGORY."; //$NON-NLS-1$
 
     private static final String EMPTY_JSON_ARRAY = "{}"; //$NON-NLS-1$
@@ -91,7 +91,8 @@ public final class Preferences {
      * {@link org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)}
      * to free the reference to itself.
      */
-    public static void dispose() {
+    public synchronized static void dispose() {
+
         if (instance != null) {
             instance = null;
         }
