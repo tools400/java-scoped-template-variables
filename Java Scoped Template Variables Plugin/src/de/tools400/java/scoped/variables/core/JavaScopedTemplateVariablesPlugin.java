@@ -12,6 +12,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import de.tools400.java.scoped.variables.core.model.VariableStore;
+import de.tools400.java.scoped.variables.core.preferences.Preferences;
+
 /**
  * The activator class controls the plug-in life cycle
  */
@@ -33,9 +36,8 @@ public class JavaScopedTemplateVariablesPlugin extends AbstractUIPlugin {
 
     /*
      * (non-Javadoc)
-     * @see
-     * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
-     * )
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.
+     * BundleContext )
      */
     public void start(BundleContext context) throws Exception {
         super.start(context);
@@ -45,14 +47,16 @@ public class JavaScopedTemplateVariablesPlugin extends AbstractUIPlugin {
 
     /*
      * (non-Javadoc)
-     * @see
-     * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
-     * )
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.
+     * BundleContext )
      */
     public void stop(BundleContext context) throws Exception {
         plugin = null;
         bundleContext = null;
         super.stop(context);
+
+        Preferences.dispose();
+        VariableStore.dispose();
     }
 
     public BundleContext getBundleContext() {
