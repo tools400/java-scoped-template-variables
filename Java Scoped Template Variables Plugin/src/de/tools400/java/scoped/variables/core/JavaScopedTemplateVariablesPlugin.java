@@ -51,12 +51,13 @@ public class JavaScopedTemplateVariablesPlugin extends AbstractUIPlugin {
      * BundleContext )
      */
     public void stop(BundleContext context) throws Exception {
-        plugin = null;
-        bundleContext = null;
-        super.stop(context);
 
         Preferences.dispose();
         VariableStore.dispose();
+
+        plugin = null;
+        bundleContext = null;
+        super.stop(context);
     }
 
     public BundleContext getBundleContext() {
