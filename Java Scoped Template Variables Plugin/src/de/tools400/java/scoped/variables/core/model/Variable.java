@@ -63,23 +63,29 @@ public class Variable implements Comparable<Variable> {
         ScopedValue[] scopedValues = this.scopedValues.values().toArray(new ScopedValue[this.scopedValues.size()]);
         Arrays.sort(scopedValues, new ScopedValueComparator(ScopedValueComparator.DESCENDING));
 
-        int start = 0;
-        int end = 0;
-
         for (ScopedValue scopedValue : scopedValues) {
-            if (scopedValue.getScope().endsWith(ASTERISK)) {
-                end = scopedValue.getScope().indexOf(ASTERISK);
-            } else {
-                end = scopedValue.getScope().length();
-            }
-            if (end < scope.length()) {
-                if (scopedValue.getScope().substring(start, end).equalsIgnoreCase(scope.substring(start, end))) {
-                    return scopedValue;
-                }
+            if (isMatchingScope(scopedValue.getScope(), scope)) {
+                return scopedValue;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Returns <code>true</code>, if a given scope matches the scope of a scoped
+     * value. A scope that ends with an asterisk matches all scopes that start
+     * with the characters in front of the asterisk. Otherwise the scopes must
+     * be equal. The comparison is not case sensitive.
+     */
+    private boolean isMatchingScope(String valueScope, String scope) {
+
+        if (valueScope.endsWith(ASTERISK)) {
+            int end = valueScope.indexOf(ASTERISK);
+            return scope.regionMatches(true, 0, valueScope, 0, end);
+        }
+
+        return valueScope.equalsIgnoreCase(scope);
     }
 
     public void clear() {
