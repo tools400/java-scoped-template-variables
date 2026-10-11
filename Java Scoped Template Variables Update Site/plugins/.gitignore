@@ -1,0 +1,4 @@
+# Created by 'PDE Tools - Build Site'. Keep the folder, because
+# build.xml fails, if it does not exist. Ignore its content.
+*
+!.gitignore

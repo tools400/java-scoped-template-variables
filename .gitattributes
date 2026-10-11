@@ -1,0 +1,6 @@
+# The sources carry mixed CRLF and LF line endings from SVN.
+# Keep them byte for byte, otherwise core.autocrlf rewrites them on commit.
+* -text
+
+*.jar binary
+*.zip binary
