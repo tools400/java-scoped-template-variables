@@ -21,11 +21,6 @@ under the terms of the Common Public License v1.0 which accompanies
 this distribution, and is available at http://www.eclipse.org/legal/cpl-v10.html.
    </license>
 
-   <url>
-      <discovery label="Tools/400" url="http://www.tools400.de"/>
-      <discovery label="waffel&apos;s Weblog - Use your own variable in eclipse code templates" url="https://thomaswabner.wordpress.com/2009/08/21/use-your-own-variable-in-eclipse-code-templates/"/>
-   </url>
-
    <plugin
          id="de.tools400.java.scoped.variables.core"
          download-size="0"
