@@ -61,6 +61,12 @@ Follow these steps to build an archived update site:
 The version number format is `major.minor.micro.qualifier`, where the
 qualifier is `r` for a release version or `bnnn` for a beta version.
 
+## Liability
+
+This software is free and provided without warranty. You use it at your
+own risk: test it with non-critical data first, and back up your data
+before you use it. The [license](LICENSE) applies in addition.
+
 ## License
 
 The plug-in is made available under the terms of the Common Public
